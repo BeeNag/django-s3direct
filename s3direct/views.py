@@ -75,11 +75,11 @@ def get_upload_params(request):
     return HttpResponse(json.dumps(upload_data), content_type='application/json')
 
 
-@csrf_protect
-@require_POST
-def generate_aws_v4_signature(request):
-    message = unquote(request.POST['to_sign'])
-    signing_date = datetime.strptime(request.POST['datetime'], '%Y%m%dT%H%M%SZ')
-    signing_key = get_aws_v4_signing_key(settings.AWS_SECRET_ACCESS_KEY, signing_date, settings.S3DIRECT_REGION, 's3')
-    signature = get_aws_v4_signature(signing_key, message)
-    return HttpResponse(signature)
+# @csrf_protect
+# @require_POST
+# def generate_aws_v4_signature(request):
+#     message = unquote(request.POST['to_sign'])
+#     signing_date = datetime.strptime(request.POST['datetime'], '%Y%m%dT%H%M%SZ')
+#     signing_key = get_aws_v4_signing_key(settings.AWS_SECRET_ACCESS_KEY, signing_date, settings.S3DIRECT_REGION, 's3')
+#     signature = get_aws_v4_signature(signing_key, message)
+#     return HttpResponse(signature)

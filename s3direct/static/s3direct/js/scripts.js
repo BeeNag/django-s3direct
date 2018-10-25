@@ -97,41 +97,41 @@ const SparkMD5 = require('spark-md5');
 
     const initiateMultipartUpload = function (element, signingUrl, objectKey, awsKey, awsRegion, awsBucket, awsBucketUrl, cacheControl, contentDisposition, acl, serverSideEncryption, file) {
         // Enclosed so we can propagate errors to the correct `element` in case of failure.
-        const getAwsV4Signature = function (signParams, signHeaders, stringToSign, signatureDateTime, canonicalRequest) {
-            return new Promise(function (resolve, reject) {
-                const form          = new FormData(),
-                      csrfTokenName = element.querySelector('.csrf-cookie-name').value,
-                      csrfInput     = document.querySelector('input[name=csrfmiddlewaretoken]'),
-                      csrfToken     = csrfInput ? csrfInput.value : Cookies.get(csrfCookieNameInput.value),
-                      headers       = {'X-CSRFToken': csrfToken};
-                form.append('to_sign', stringToSign);
-                form.append('datetime', signatureDateTime);
-                request('POST', signingUrl, form, headers, element, function (status, response) {
-                    switch (status) {
-                        case 200:
-                            resolve(response);
-                            break;
-                        default:
-                            error(element, 'Could not generate AWS v4 signature.')
-                            reject();
-                            break;
-                    }
-                });
-            })
-        };
+        // const getAwsV4Signature = function (signParams, signHeaders, stringToSign, signatureDateTime, canonicalRequest) {
+        //     return new Promise(function (resolve, reject) {
+        //         const form          = new FormData(),
+        //               csrfTokenName = element.querySelector('.csrf-cookie-name').value,
+        //               csrfInput     = document.querySelector('input[name=csrfmiddlewaretoken]'),
+        //               csrfToken     = csrfInput ? csrfInput.value : Cookies.get(csrfCookieNameInput.value),
+        //               headers       = {'X-CSRFToken': csrfToken};
+        //         form.append('to_sign', stringToSign);
+        //         form.append('datetime', signatureDateTime);
+        //         request('POST', signingUrl, form, headers, element, function (status, response) {
+        //             switch (status) {
+        //                 case 200:
+        //                     resolve(response);
+        //                     break;
+        //                 default:
+        //                     error(element, 'Could not generate AWS v4 signature.')
+        //                     reject();
+        //                     break;
+        //             }
+        //         });
+        //     })
+        // };
 
-        const generateAmazonHeaders = function (acl, serverSideEncryption) {
-            // Either of these may be null, so don't add them unless they exist:
-            let headers = {}
-            if (acl) headers['x-amz-acl'] = acl;
-            if (serverSideEncryption) headers['x-amz-server-side-encryption'] = serverSideEncryption;
-            return headers;
-        };
+        // const generateAmazonHeaders = function (acl, serverSideEncryption) {
+        //     // Either of these may be null, so don't add them unless they exist:
+        //     let headers = {}
+        //     if (acl) headers['x-amz-acl'] = acl;
+        //     if (serverSideEncryption) headers['x-amz-server-side-encryption'] = serverSideEncryption;
+        //     return headers;
+        // };
 
         Evaporate.create(
             {
                 //signerUrl: signingUrl,
-                customAuthMethod: getAwsV4Signature,
+                // customAuthMethod: getAwsV4Signature,
                 aws_key: awsKey,
                 bucket: awsBucket,
                 awsRegion: awsRegion,
@@ -150,7 +150,7 @@ const SparkMD5 = require('spark-md5');
                 name: objectKey,
                 file: file,
                 contentType: file.type,
-                xAmzHeadersAtInitiate: generateAmazonHeaders(acl, serverSideEncryption),
+                // xAmzHeadersAtInitiate: generateAmazonHeaders(acl, serverSideEncryption),
                 notSignedHeadersAtInitiate: {'Cache-Control': cacheControl, 'Content-Disposition': contentDisposition},
                 progress: function (progressRatio, stats) { updateProgressBar(element, progressRatio); },
             }).then(
@@ -174,7 +174,7 @@ const SparkMD5 = require('spark-md5');
               dest                = element.querySelector('.file-dest').value,
               csrfCookieNameInput = element.querySelector('.csrf-cookie-name'),
               destinationCheckUrl = element.getAttribute('data-policy-url'),
-              signerUrl           = element.getAttribute('data-signing-url'),
+              // signerUrl           = element.getAttribute('data-signing-url'),
               form                = new FormData(),
               csrfToken           = csrfInput ? csrfInput.value : Cookies.get(csrfCookieNameInput.value),
               headers             = {'X-CSRFToken': csrfToken };
@@ -189,7 +189,7 @@ const SparkMD5 = require('spark-md5');
                 case 200:
                     initiateMultipartUpload(
                         element,
-                        signerUrl,
+                        // signerUrl,
                         uploadParameters.object_key,
                         uploadParameters.access_key_id,
                         uploadParameters.region,
