@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from s3direct.views import get_upload_params, generate_aws_v4_signature
+from s3direct.views import get_upload_params #, generate_aws_v4_signature
 
 
 urlpatterns = [
