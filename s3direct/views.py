@@ -11,7 +11,7 @@ from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbid
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_POST
 
-from .utils import get_aws_v4_signature, get_aws_v4_signing_key, get_s3direct_destinations, get_key
+from .utils import get_s3direct_destinations, get_key
 
 
 @csrf_protect
@@ -52,7 +52,7 @@ def get_upload_params(request):
         object_key = get_key(key, file_name, dest)
 
     bucket = dest.get('bucket') or settings.AWS_STORAGE_BUCKET_NAME
-    region = dest.get('region') or getattr(settings, 'S3DIRECT_REGION', None) or 'us-east-1'
+    # region = dest.get('region') or getattr(settings, 'S3DIRECT_REGION', None) or 'us-east-1'
     # endpoint = 's3.amazonaws.com' if region == 'us-east-1' else ('s3-%s.amazonaws.com' % region)
     endpoint = 'dali.vpt.co.uk'
 
@@ -64,22 +64,9 @@ def get_upload_params(request):
     upload_data = {
         'object_key': object_key,
         'access_key_id': access_key_id,
-        'region': region,
         'bucket': bucket,
         'bucket_url': bucket_url,
         'cache_control': dest.get('cache_control'),
         'content_disposition': dest.get('content_disposition'),
-        'acl': dest.get('acl') or 'public-read',
-        'server_side_encryption': dest.get('server_side_encryption'),
     }
     return HttpResponse(json.dumps(upload_data), content_type='application/json')
-
-
-# @csrf_protect
-# @require_POST
-# def generate_aws_v4_signature(request):
-#     message = unquote(request.POST['to_sign'])
-#     signing_date = datetime.strptime(request.POST['datetime'], '%Y%m%dT%H%M%SZ')
-#     signing_key = get_aws_v4_signing_key(settings.AWS_SECRET_ACCESS_KEY, signing_date, settings.S3DIRECT_REGION, 's3')
-#     signature = get_aws_v4_signature(signing_key, message)
-#     return HttpResponse(signature)
