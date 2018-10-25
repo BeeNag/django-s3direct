@@ -1,7 +1,4 @@
 const Cookies = require('js-cookie');
-const createHash = require('sha.js')
-const Evaporate = require('evaporate');
-const SparkMD5 = require('spark-md5');
 const Minio = require('minio');
 
 
@@ -87,85 +84,6 @@ const Minio = require('minio');
         element.querySelector('.bar').style.width = '0%';
         disableSubmit(false);
     };
-
-    // const computeMd5 = function (data) {
-    //     return btoa(SparkMD5.ArrayBuffer.hash(data, true));
-    // };
-
-    // const computeSha256 = function (data) {
-    //     return createHash('sha256').update(data, 'utf-8').digest('hex');
-    // };
-
-    // const initiateMultipartUpload = function (element, signingUrl, objectKey, awsKey, awsRegion, awsBucket, awsBucketUrl, cacheControl, contentDisposition, acl, serverSideEncryption, file) {
-    //     // Enclosed so we can propagate errors to the correct `element` in case of failure.
-    //     const getAwsV4Signature = function (signParams, signHeaders, stringToSign, signatureDateTime, canonicalRequest) {
-    //         return new Promise(function (resolve, reject) {
-    //             const form          = new FormData(),
-    //                   csrfTokenName = element.querySelector('.csrf-cookie-name').value,
-    //                   csrfInput     = document.querySelector('input[name=csrfmiddlewaretoken]'),
-    //                   csrfToken     = csrfInput ? csrfInput.value : Cookies.get(csrfCookieNameInput.value),
-    //                   headers       = {'X-CSRFToken': csrfToken};
-    //             form.append('to_sign', stringToSign);
-    //             form.append('datetime', signatureDateTime);
-    //             request('POST', signingUrl, form, headers, element, function (status, response) {
-    //                 switch (status) {
-    //                     case 200:
-    //                         resolve(response);
-    //                         break;
-    //                     default:
-    //                         error(element, 'Could not generate AWS v4 signature.')
-    //                         reject();
-    //                         break;
-    //                 }
-    //             });
-    //         })
-    //     };
-
-    //     const generateAmazonHeaders = function (acl, serverSideEncryption) {
-    //         // Either of these may be null, so don't add them unless they exist:
-    //         let headers = {}
-    //         if (acl) headers['x-amz-acl'] = acl;
-    //         if (serverSideEncryption) headers['x-amz-server-side-encryption'] = serverSideEncryption;
-    //         return headers;
-    //     };
-
-    //     Evaporate.create(
-    //         {
-    //             //signerUrl: signingUrl,
-    //             customAuthMethod: getAwsV4Signature,
-    //             aws_key: awsKey,
-    //             bucket: awsBucket,
-    //             awsRegion: awsRegion,
-    //             computeContentMd5: true,
-    //             cryptoMd5Method: computeMd5,
-    //             cryptoHexEncodedHash256: computeSha256,
-    //             partSize: 20 * 1024 * 1024,
-    //             logging: true,
-    //             debug: true,
-    //             allowS3ExistenceOptimization: true,
-    //             s3FileCacheHoursAgo: 12,
-    //         }
-    //     ).then(function (evaporate) {
-    //         beginUpload(element);
-    //         evaporate.add({
-    //             name: objectKey,
-    //             file: file,
-    //             contentType: file.type,
-    //             xAmzHeadersAtInitiate: generateAmazonHeaders(acl, serverSideEncryption),
-    //             notSignedHeadersAtInitiate: {'Cache-Control': cacheControl, 'Content-Disposition': contentDisposition},
-    //             progress: function (progressRatio, stats) { updateProgressBar(element, progressRatio); },
-    //         }).then(
-    //             function (awsS3ObjectKey) {
-    //                 console.log('Successfully uploaded to:', awsS3ObjectKey);
-    //                 finishUpload(element, awsBucketUrl, awsS3ObjectKey);
-    //             },
-    //             function (reason) {
-    //                 console.error('Failed to upload because:', reason);
-    //                 return error(element, reason)
-    //             }
-    //         )
-    //     });
-    // };
 
     const intiateUplaod = function (element, objectKey, aKey, sKey, awsRegion, awsBucket, file) {
         return new Promise(function (resolve, reject) {
