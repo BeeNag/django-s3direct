@@ -1,4 +1,4 @@
-<div class="s3direct" data-policy-url="{{ policy_url }}" data-signing-url="{{ signing_url }}">
+<div class="s3direct" data-policy-url="{{ policy_url }}">
   <a class="file-link" target="_blank" href="{{ file_url }}">{{ file_name }}</a>
   <a class="file-remove" href="#remove">Remove</a>
   <input class="csrf-cookie-name" type="hidden" value="{{ csrf_cookie_name }}">

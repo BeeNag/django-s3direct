@@ -65,8 +65,8 @@ def get_upload_params(request):
     upload_data = {
         'object_key': object_key,
         'access_key_id': access_key_id,
+        'secret_key_id': secret_key_id,
         'region': region,
         'bucket': bucket
-        # 'bucket_url': bucket_url
     }
     return HttpResponse(json.dumps(upload_data), content_type='application/json')
