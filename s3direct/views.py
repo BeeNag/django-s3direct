@@ -11,7 +11,7 @@ from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbid
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_POST
 
-from .utils import get_s3direct_destinations, get_key # get_aws_v4_signature, get_aws_v4_signing_key
+from .utils import get_aws_v4_signature, get_aws_v4_signing_key, get_s3direct_destinations, get_key
 
 
 @csrf_protect
@@ -59,7 +59,7 @@ def get_upload_params(request):
     # AWS credentials are not required for publicly-writable buckets
     access_key_id = getattr(settings, 'AWS_ACCESS_KEY_ID', None)
 
-    bucket_url = 'https://{0}/media/{1}'.format(endpoint, bucket)
+    bucket_url = 'https://{0}/{1}'.format(endpoint, bucket)
 
     upload_data = {
         'object_key': object_key,
@@ -75,11 +75,11 @@ def get_upload_params(request):
     return HttpResponse(json.dumps(upload_data), content_type='application/json')
 
 
-# @csrf_protect
-# @require_POST
-# def generate_aws_v4_signature(request):
-#     message = unquote(request.POST['to_sign'])
-#     signing_date = datetime.strptime(request.POST['datetime'], '%Y%m%dT%H%M%SZ')
-#     signing_key = get_aws_v4_signing_key(settings.AWS_SECRET_ACCESS_KEY, signing_date, settings.S3DIRECT_REGION, 's3')
-#     signature = get_aws_v4_signature(signing_key, message)
-#     return HttpResponse(signature)
+@csrf_protect
+@require_POST
+def generate_aws_v4_signature(request):
+    message = unquote(request.POST['to_sign'])
+    signing_date = datetime.strptime(request.POST['datetime'], '%Y%m%dT%H%M%SZ')
+    signing_key = get_aws_v4_signing_key(settings.AWS_SECRET_ACCESS_KEY, signing_date, settings.S3DIRECT_REGION, 's3')
+    signature = get_aws_v4_signature(signing_key, message)
+    return HttpResponse(signature)
