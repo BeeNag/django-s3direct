@@ -59,7 +59,7 @@ def get_upload_params(request):
     # AWS credentials are not required for publicly-writable buckets
     access_key_id = getattr(settings, 'AWS_ACCESS_KEY_ID', None)
 
-    bucket_url = 'https://{0}/{1}'.format(endpoint, bucket)
+    bucket_url = 'https://{0}/media/{1}'.format(endpoint, bucket)
 
     upload_data = {
         'object_key': object_key,
