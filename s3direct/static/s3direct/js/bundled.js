@@ -64313,7 +64313,7 @@ const Minio = require('minio');
         disableSubmit(false);
     };
 
-    const intiateUplaod = function (element, objectKey, aKey, sKey, awsRegion, awsBucket, file) {
+    const initiateUpload = function (element, objectKey, aKey, sKey, awsRegion, awsBucket, file) {
         return new Promise(function (resolve, reject) {
             const minioClient = new Minio.Client({
                 endPoint: 'minio',
