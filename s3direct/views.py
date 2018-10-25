@@ -11,7 +11,7 @@ from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbid
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_POST
 
-from .utils import get_s3direct_destinations, get_key, # get_aws_v4_signature, get_aws_v4_signing_key
+from .utils import get_s3direct_destinations, get_key # get_aws_v4_signature, get_aws_v4_signing_key
 
 
 @csrf_protect
