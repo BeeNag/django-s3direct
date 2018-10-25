@@ -139,8 +139,11 @@ const Minio = require('minio');
         form.append('name', file.name)
         form.append('type', file.type)
         form.append('size', file.size)
+        console.log(element)
         request('POST', destinationCheckUrl, form, headers, element, function(status, response) {
+            console.log('Called...')
             const uploadParameters = parseJson(response)
+            console.log(uploadParameters)
             switch(status) {
                 case 200:
                     initiateUpload(
