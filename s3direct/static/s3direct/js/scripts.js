@@ -86,40 +86,29 @@ const Minio = require('minio');
     };
 
     const initiateUpload = function (element, objectKey, aKey, sKey, awsRegion, awsBucket, file) {
-        return new Promise(function (resolve, reject) {
-            const minioClient = new Minio.Client({
-                endPoint: 'minio',
-                port: 9000,
-                useSSL: false,
-                access_key: aKey,
-                secret_key: sKey
+        let minioClient = new Minio.Client({
+            endPoint: 'minio',
+            port: 9000,
+            useSSL: false,
+            accessKey: aKey,
+            secretKey:sKey
+        });
+
+        beginUpload(element);
+
+        minioClient.makeBucket(awsBucket, awsRegion, function(err) {
+            if (err) return console.log(err)
+            console.log('Bucket created successfully in ' + awsRegion)
+            let metaData = {
+                'Content-Type': 'application/octet-stream',
+                'X-Amz-Meta-Testing': 1234,
+                'example': 5678
+            }
+            // Use fPutObject API to load files into bucket.
+            minioClient.fPutObject(awsBucket, objectKey, file, metaData, function(err, etag) {
+                if (err) return console.log(err);
+                console.log('File uploaded successfully.')
             });
-        }).then(function (client) {
-            beginUpload(element);
-            return new Promise(function (resolve, reject) {
-                client.makeBucket(awsBucket, awsRegion, function (err) {
-                    if (err) return console.log(err);
-                    console.log('Bucket created successfully in '+awsRegion)
-                    let metaData = {
-                        'Content-Type': 'application/octet-stream',
-                        'X-Amz-Meta-Testing': 1234,
-                        'example': 5678
-                    }
-                    // Using fPutObject API to upload file to the bucket
-                    client.fPutObject(awsBucket, file, objectKey, metaData, function (err, etag) {
-                        if (err) return console.log(err);
-                    })
-                })
-            }).then(
-                function (awsS3ObjectKey) {
-                    console.log('Successfully uploaded to:', awsS3ObjectKey);
-                    finishUpload(element, awsBucketUrl, awsS3ObjectKey);
-                },
-                function (reason) {
-                    console.error('Failed to upload because:', reason);
-                    return error(element, reason)
-                }
-            )
         });
     };
 
@@ -144,6 +133,7 @@ const Minio = require('minio');
             console.log('Called...')
             const uploadParameters = parseJson(response)
             console.log(uploadParameters)
+            console.log(status)
             switch(status) {
                 case 200:
                     initiateUpload(
