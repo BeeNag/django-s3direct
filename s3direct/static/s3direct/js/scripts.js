@@ -89,7 +89,7 @@ const Minio = require('minio');
         let minioClient = new Minio.Client({
             endPoint: 'minio',
             port: 9000,
-            useSSL: false,
+            useSSL: true,
             accessKey: aKey,
             secretKey:sKey
         });
@@ -128,12 +128,8 @@ const Minio = require('minio');
         form.append('name', file.name)
         form.append('type', file.type)
         form.append('size', file.size)
-        console.log(element)
         request('POST', destinationCheckUrl, form, headers, element, function(status, response) {
-            console.log('Called...')
             const uploadParameters = parseJson(response)
-            console.log(uploadParameters)
-            console.log(status)
             switch(status) {
                 case 200:
                     initiateUpload(
