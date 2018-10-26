@@ -64301,12 +64301,12 @@ const Minio = require('minio');
         element.className = 's3direct progress-active'
     };
 
-    const finishUpload = function (element, awsBucketUrl, objectKey) {
+    const finishUpload = function (element, objectKey) {
         const link = element.querySelector('.file-link');
-        const url = element.querySelector('.file-url');
-        url.value = awsBucketUrl + '/' + objectKey;
-        link.setAttribute('href', url.value);
-        link.innerHTML = parseNameFromUrl(url.value).split('/').pop();
+        // const url = element.querySelector('.file-url');
+        // url.value = awsBucketUrl + '/' + objectKey;
+        // link.setAttribute('href', url.value);
+        // link.innerHTML = parseNameFromUrl(url.value).split('/').pop();
 
         element.className = 's3direct link-active';
         element.querySelector('.bar').style.width = '0%';
@@ -64335,6 +64335,7 @@ const Minio = require('minio');
             // Use fPutObject API to load files into bucket.
             minioClient.fPutObject(awsBucket, objectKey, file, metaData, function(err, etag) {
                 if (err) return console.log(err);
+                finishUpload(element, objectKey)
                 console.log('File uploaded successfully.')
             });
         });
