@@ -44,7 +44,7 @@ const SparkMD5 = require('spark-md5');
     };
 
     const updateProgressBar = function (element, progressRatio) {
-        const bar = element.querySelector('.bar');
+        const bar = element.querySelector('.progress-bar');
         bar.style.width = Math.round(progressRatio * 100) + '%';
     };
 
@@ -83,7 +83,7 @@ const SparkMD5 = require('spark-md5');
         link.innerHTML = parseNameFromUrl(url.value).split('/').pop();
 
         element.className = 's3direct link-active';
-        element.querySelector('.bar').style.width = '0%';
+        element.querySelector('.progress-bar').style.width = '0%';
         disableSubmit(false);
     };
 
@@ -213,25 +213,14 @@ const SparkMD5 = require('spark-md5');
         })
     }
 
-    const removeUpload = function (e) {
-        e.preventDefault()
-
-        const el = e.target.parentElement
-        el.querySelector('.file-url').value = ''
-        el.querySelector('.file-input').value = ''
-        el.className = 's3direct form-active'
-    };
-
     const addHandlers = function (el) {
         console.log('Adding django-s3direct handlers…');
         const url = el.querySelector('.file-url'),
               input = el.querySelector('.file-input'),
-              remove = el.querySelector('.file-remove'),
               status = (url.value === '') ? 'form' : 'link';
 
         el.className = 's3direct ' + status + '-active'
 
-        remove.addEventListener('click', removeUpload, false)
         input.addEventListener('change', checkFileAndInitiateUpload, false)
     };
 
