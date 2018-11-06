@@ -7,7 +7,9 @@
   },
   "dependencies": {
     "js-cookie": "^2.1.4",
-    "minio": "^7.0.1"
+    "evaporate": "^2.1.1",
+    "sha.js": "^2.4.8",
+    "spark-md5": "^3.0.0"
   },
   "devDependencies": {
     "browserify": "^14.3.0",

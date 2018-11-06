@@ -1,5 +1,7 @@
 const Cookies = require('js-cookie');
-const Minio = require('minio');
+const createHash = require('sha.js')
+const Evaporate = require('evaporate');
+const SparkMD5 = require('spark-md5');
 
 
 (function(){
@@ -73,43 +75,94 @@ const Minio = require('minio');
         element.className = 's3direct progress-active'
     };
 
-    const finishUpload = function (element, objectKey) {
+    const finishUpload = function (element, awsBucketUrl, objectKey) {
         const link = element.querySelector('.file-link');
-        // const url = element.querySelector('.file-url');
-        // url.value = awsBucketUrl + '/' + objectKey;
-        // link.setAttribute('href', url.value);
-        // link.innerHTML = parseNameFromUrl(url.value).split('/').pop();
+        const url = element.querySelector('.file-url');
+        url.value = awsBucketUrl + '/' + objectKey;
+        link.setAttribute('href', url.value);
+        link.innerHTML = parseNameFromUrl(url.value).split('/').pop();
 
         element.className = 's3direct link-active';
         element.querySelector('.bar').style.width = '0%';
         disableSubmit(false);
     };
 
-    const initiateUpload = function (element, objectKey, aKey, sKey, awsRegion, awsBucket, file) {
-        let minioClient = new Minio.Client({
-            endPoint: 'minio',
-            port: 9000,
-            useSSL: true,
-            accessKey: aKey,
-            secretKey:sKey
-        });
+    const computeMd5 = function (data) {
+        return btoa(SparkMD5.ArrayBuffer.hash(data, true));
+    };
 
-        beginUpload(element);
+    const computeSha256 = function (data) {
+        return createHash('sha256').update(data, 'utf-8').digest('hex');
+    };
 
-        minioClient.makeBucket(awsBucket, awsRegion, function(err) {
-            if (err) return console.log(err)
-            console.log('Bucket created successfully in ' + awsRegion)
-            let metaData = {
-                'Content-Type': 'application/octet-stream',
-                'X-Amz-Meta-Testing': 1234,
-                'example': 5678
+    const initiateMultipartUpload = function (element, signingUrl, objectKey, awsKey, awsRegion, awsBucket, awsBucketUrl, cacheControl, contentDisposition, acl, serverSideEncryption, file) {
+        // Enclosed so we can propagate errors to the correct `element` in case of failure.
+        const getAwsV4Signature = function (signParams, signHeaders, stringToSign, signatureDateTime, canonicalRequest) {
+            return new Promise(function (resolve, reject) {
+                const form          = new FormData(),
+                      csrfTokenName = element.querySelector('.csrf-cookie-name').value,
+                      csrfInput     = document.querySelector('input[name=csrfmiddlewaretoken]'),
+                      csrfToken     = csrfInput ? csrfInput.value : Cookies.get(csrfCookieNameInput.value),
+                      headers       = {'X-CSRFToken': csrfToken};
+                form.append('to_sign', stringToSign);
+                form.append('datetime', signatureDateTime);
+                request('POST', signingUrl, form, headers, element, function (status, response) {
+                    switch (status) {
+                        case 200:
+                            resolve(response);
+                            break;
+                        default:
+                            error(element, 'Could not generate AWS v4 signature.')
+                            reject();
+                            break;
+                    }
+                });
+            })
+        };
+
+        const generateAmazonHeaders = function (acl, serverSideEncryption) {
+            // Either of these may be null, so don't add them unless they exist:
+            let headers = {}
+            if (acl) headers['x-amz-acl'] = acl;
+            if (serverSideEncryption) headers['x-amz-server-side-encryption'] = serverSideEncryption;
+            return headers;
+        };
+
+        Evaporate.create(
+            {
+                //signerUrl: signingUrl,
+                customAuthMethod: getAwsV4Signature,
+                aws_key: awsKey,
+                bucket: awsBucket,
+                awsRegion: awsRegion,
+                computeContentMd5: true,
+                cryptoMd5Method: computeMd5,
+                cryptoHexEncodedHash256: computeSha256,
+                partSize: 20 * 1024 * 1024,
+                logging: true,
+                debug: true,
+                allowS3ExistenceOptimization: true,
+                s3FileCacheHoursAgo: 12,
             }
-            // Use fPutObject API to load files into bucket.
-            minioClient.fPutObject(awsBucket, objectKey, file, metaData, function(err, etag) {
-                if (err) return console.log(err);
-                finishUpload(element, objectKey)
-                console.log('File uploaded successfully.')
-            });
+        ).then(function (evaporate) {
+            beginUpload(element);
+            evaporate.add({
+                name: objectKey,
+                file: file,
+                contentType: file.type,
+                xAmzHeadersAtInitiate: generateAmazonHeaders(acl, serverSideEncryption),
+                notSignedHeadersAtInitiate: {'Cache-Control': cacheControl, 'Content-Disposition': contentDisposition},
+                progress: function (progressRatio, stats) { updateProgressBar(element, progressRatio); },
+            }).then(
+                function (awsS3ObjectKey) {
+                    console.log('Successfully uploaded to:', awsS3ObjectKey);
+                    finishUpload(element, awsBucketUrl, awsS3ObjectKey);
+                },
+                function (reason) {
+                    console.error('Failed to upload because:', reason);
+                    return error(element, reason)
+                }
+            )
         });
     };
 
@@ -121,6 +174,7 @@ const Minio = require('minio');
               dest                = element.querySelector('.file-dest').value,
               csrfCookieNameInput = element.querySelector('.csrf-cookie-name'),
               destinationCheckUrl = element.getAttribute('data-policy-url'),
+              signerUrl           = element.getAttribute('data-signing-url'),
               form                = new FormData(),
               csrfToken           = csrfInput ? csrfInput.value : Cookies.get(csrfCookieNameInput.value),
               headers             = {'X-CSRFToken': csrfToken };
@@ -133,13 +187,18 @@ const Minio = require('minio');
             const uploadParameters = parseJson(response)
             switch(status) {
                 case 200:
-                    initiateUpload(
+                    initiateMultipartUpload(
                         element,
+                        signerUrl,
                         uploadParameters.object_key,
                         uploadParameters.access_key_id,
-                        uploadParameters.secret_key_id,
                         uploadParameters.region,
                         uploadParameters.bucket,
+                        uploadParameters.bucket_url,
+                        uploadParameters.cache_control,
+                        uploadParameters.content_disposition,
+                        uploadParameters.acl,
+                        uploadParameters.server_side_encryption,
                         file
                     );
                     break;
