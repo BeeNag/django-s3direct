@@ -3,6 +3,7 @@
 }
 
 .s3direct .progress {
+  background: #007bff;
   width: 200px;
 }
 
