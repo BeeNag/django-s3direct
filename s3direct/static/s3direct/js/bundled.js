@@ -6034,7 +6034,6 @@ const SparkMD5 = require('spark-md5');
     };
 
     const updateProgressBar = function (element, progressRatio) {
-        // const bar = element.querySelector('.progress-bar');
         const bar = element.querySelector('div[role=progressbar]');
         console.log(bar)
         console.log(bar.style)
@@ -6055,7 +6054,7 @@ const SparkMD5 = require('spark-md5');
         const submitRow = document.querySelector('.submit-row')
         if( ! submitRow) return
 
-        const buttons = submitRow.querySelectorAll('input[type=submit],button[type=submit],btn-light');
+        const buttons = submitRow.querySelectorAll('input[type=submit],button[type=submit],a[role=button]');
 
         if (status === true) concurrentUploads++
         else concurrentUploads--
@@ -6078,7 +6077,6 @@ const SparkMD5 = require('spark-md5');
         link.innerHTML = parseNameFromUrl(url.value).split('/').pop();
 
         element.className = 's3direct link-active';
-        // element.querySelector('.progress-bar').style.width = '0%';
         element.querySelector('div[role=progressbar]').style.width = '0%';
         disableSubmit(false);
     };
