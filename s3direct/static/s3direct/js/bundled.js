@@ -6035,10 +6035,6 @@ const SparkMD5 = require('spark-md5');
 
     const updateProgressBar = function (element, progressRatio) {
         const bar = element.querySelector('div[role=progressbar]');
-        console.log(bar)
-        console.log(bar.style)
-        console.log(bar.style.width)
-        console.log(progressRatio * 100)
         bar.style.width = Math.round(progressRatio * 100) + '%';
     };
 
