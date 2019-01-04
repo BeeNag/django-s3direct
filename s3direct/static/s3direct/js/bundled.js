@@ -6035,8 +6035,11 @@ const SparkMD5 = require('spark-md5');
 
     const updateProgressBar = function (element, progressRatio) {
         // const bar = element.querySelector('.progress-bar');
-        const bar = element.getElementsByClassName('progress-bar progress-bar-striped progress-bar-animated');
+        const bar = element.querySelector('div[role=progressbar]');
         console.log(bar)
+        console.log(bar.style)
+        console.log(bar.style.width)
+        console.log(progressRatio * 100)
         bar.style.width = Math.round(progressRatio * 100) + '%';
     };
 
@@ -6076,7 +6079,7 @@ const SparkMD5 = require('spark-md5');
 
         element.className = 's3direct link-active';
         // element.querySelector('.progress-bar').style.width = '0%';
-        element.getElementsByClassName('progress-bar progress-bar-striped progress-bar-animated').style.width = '0%';
+        element.querySelector('div[role=progressbar]').style.width = '0%';
         disableSubmit(false);
     };
 
