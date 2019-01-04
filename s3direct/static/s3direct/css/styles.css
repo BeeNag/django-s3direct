@@ -13,6 +13,7 @@
 
 .s3direct .file-remove {
   display: none;
+  color: #fff;
 }
 
 .s3direct .progress,
