@@ -6207,6 +6207,7 @@ const SparkMD5 = require('spark-md5');
         e.preventDefault()
 
         const el = e.target.parentElement
+        console.log(el)
         el.querySelector('.file-url').value = ''
         el.querySelector('.file-input').value = ''
         el.className = 's3direct form-active'
