@@ -44,7 +44,7 @@ const SparkMD5 = require('spark-md5');
     };
 
     const updateProgressBar = function (element, progressRatio) {
-        const bar = element.querySelector('div[role=progressbar]');
+        const bar = element.querySelector('.progress-bar');
         bar.style.width = Math.round(progressRatio * 100) + '%';
     };
 
@@ -60,7 +60,7 @@ const SparkMD5 = require('spark-md5');
         const submitRow = document.querySelector('.submit-row')
         if( ! submitRow) return
 
-        const buttons = submitRow.querySelectorAll('input[type=submit],button[type=submit],a[role=button]');
+        const buttons = submitRow.querySelectorAll('input[type=submit],button[type=submit],btn-light');
 
         if (status === true) concurrentUploads++
         else concurrentUploads--
@@ -217,7 +217,6 @@ const SparkMD5 = require('spark-md5');
         e.preventDefault()
 
         const el = e.target.parentElement
-        console.log(el)
         el.querySelector('.file-url').value = ''
         el.querySelector('.file-input').value = ''
         el.className = 's3direct form-active'

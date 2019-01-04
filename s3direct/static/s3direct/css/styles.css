@@ -3,13 +3,13 @@
 }
 
 .s3direct .progress {
-  background: #007bff;
+  background: #333;
   width: 200px;
 }
 
 .s3direct .file-remove {
   margin-top: 10px;
-  /*text-transform: uppercase;*/
+  text-transform: uppercase;
 }
 
 .s3direct .progress,
