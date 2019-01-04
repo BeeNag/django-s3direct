@@ -44,7 +44,7 @@ const SparkMD5 = require('spark-md5');
     };
 
     const updateProgressBar = function (element, progressRatio) {
-        const bar = element.querySelectorAll('.progress-bar.progress-bar-striped.progress-bar-animated');
+        const bar = element.querySelector('div[role=progressbar]');
         bar.style.width = Math.round(progressRatio * 100) + '%';
     };
 
