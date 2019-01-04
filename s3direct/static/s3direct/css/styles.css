@@ -4,12 +4,15 @@
 
 .s3direct .progress {
   background: #007bff;
-  width: 200px;
+  width: 333px;
+}
+
+.s3direct .file-link {
+  width: 333px;
 }
 
 .s3direct .file-remove {
-  margin-top: 10px;
-  text-transform: uppercase;
+  display: none;
 }
 
 .s3direct .progress,
